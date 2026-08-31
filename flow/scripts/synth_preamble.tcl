@@ -189,7 +189,10 @@ proc read_design_sources { } {
   }
 }
 
-if { $::env(ABC_AREA) } {
+if { [env_var_exists_and_non_empty ABC_SCRIPT] } {
+  puts "Using ABC script $::env(ABC_SCRIPT)."
+  set abc_script $::env(ABC_SCRIPT)
+} elseif { $::env(ABC_AREA) } {
   puts "Using ABC area script."
   set abc_script $::env(SCRIPTS_DIR)/abc_area.script
 } else {
@@ -216,6 +219,14 @@ if { [env_var_exists_and_non_empty DONT_USE_CELLS] } {
 set abc_args [list -script $abc_script \
   {*}$lib_args {*}$lib_dont_use_args -constr $::env(OBJECTS_DIR)/abc.constr]
 
+# Optional external ABC binary (e.g. a mapper fork); yosys runs it in place
+# of its bundled yosys-abc.
+if { [env_var_exists_and_non_empty ABC_EXE] } {
+  puts "Using external ABC executable $::env(ABC_EXE)."
+  lappend abc_args -exe $::env(ABC_EXE)
+}
+
+set clock_period ""
 if { [env_var_exists_and_non_empty SDC_FILE_CLOCK_PERIOD] } {
   puts "Extracting clock period from SDC file: $::env(SDC_FILE_CLOCK_PERIOD)"
   set fp [open $::env(SDC_FILE_CLOCK_PERIOD) r]
@@ -225,6 +236,26 @@ if { [env_var_exists_and_non_empty SDC_FILE_CLOCK_PERIOD] } {
     lappend abc_args -D $clock_period
   }
   close $fp
+}
+
+# yosys substitutes {D} only in its built-in ABC scripts, not in user script
+# files (it sources those verbatim), so expand it here for a custom ABC_SCRIPT.
+if { [env_var_exists_and_non_empty ABC_SCRIPT] } {
+  set fp [open $abc_script r]
+  set script_text [read $fp]
+  close $fp
+  if { [string first "{D}" $script_text] >= 0 } {
+    set d_arg ""
+    if { $clock_period != "" } {
+      set d_arg "-D $clock_period"
+    }
+    set expanded $::env(OBJECTS_DIR)/abc_custom.script
+    set fp [open $expanded w]
+    puts -nonewline $fp [string map [list "{D}" $d_arg] $script_text]
+    close $fp
+    set idx [lsearch -exact $abc_args -script]
+    set abc_args [lreplace $abc_args [expr {$idx + 1}] [expr {$idx + 1}] $expanded]
+  }
 }
 
 set constr [open $::env(OBJECTS_DIR)/abc.constr w]

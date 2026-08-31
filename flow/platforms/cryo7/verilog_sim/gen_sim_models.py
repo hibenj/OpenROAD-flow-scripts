@@ -15,7 +15,7 @@ import sys
 
 def parse_cells(text):
     cells = []
-    for m in re.finditer(r'\bcell\(([^)]+)\)\s*\{', text):
+    for m in re.finditer(r'\bcell\s*\(([^)]+)\)\s*\{', text):
         name = m.group(1)
         depth, j = 0, m.end() - 1
         while j < len(text):
@@ -71,8 +71,8 @@ def single_literal(expr):
 
 def gen_cell(name, body):
     pins = []  # (pin, dir, function)
-    for pm in re.finditer(r'\bpin\(([^)]+)\)\s*\{', body):
-        _, pb = group_body(body[pm.start():], r'\bpin\(')
+    for pm in re.finditer(r'\bpin\s*\(([^)]+)\)\s*\{', body):
+        _, pb = group_body(body[pm.start():], r'\bpin\s*\(')
         pins.append((pm.group(1), attr(pb, 'direction'), attr(pb, 'function')))
     if not pins:
         return None

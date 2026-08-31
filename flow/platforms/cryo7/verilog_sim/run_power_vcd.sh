@@ -22,7 +22,7 @@ trap 'rm -rf "$WORK"' EXIT
 
 if [ ! -f "$MODELS" ]; then
   python3 $PLATFORM/verilog_sim/gen_sim_models.py "$MODELS" \
-    "$PLATFORM/gen/0.7V_${TEMP}_maxtran.lib" "$PLATFORM/cryo7_tie_R.lib"
+    "$PLATFORM/gen/0.7V_${TEMP}_maxtran.lib"
 fi
 
 verilator --binary --timing --trace -Wno-fatal -j "$(nproc)" --top-module tb \
@@ -36,6 +36,6 @@ ODB_FILE=$RESULTS/6_final.odb \
 SDC_FILE=$RESULTS/6_final.sdc \
 SPEF_FILE=$RESULTS/6_final.spef \
 VCD_FILE=$WORK/activity.vcd \
-LIB_FILES="$PLATFORM/gen/0.7V_${TEMP}_maxtran.lib $PLATFORM/cryo7_tie_R.lib" \
+LIB_FILES="$PLATFORM/gen/0.7V_${TEMP}_maxtran.lib" \
   "$OPENROAD" -exit -no_splash $PLATFORM/power_vcd.tcl | tee "$OUT"
 echo "power report: $OUT"
