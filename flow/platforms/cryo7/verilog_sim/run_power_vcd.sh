@@ -25,8 +25,11 @@ if [ ! -f "$MODELS" ]; then
     "$PLATFORM/gen/0.7V_${TEMP}_maxtran.lib"
 fi
 
-verilator --binary --timing --trace -Wno-fatal -j "$(nproc)" --top-module tb \
-  -GCLK_PS="$CLK_PS" --Mdir "$WORK/obj_dir" -o tb_sim \
+# -fno-inline keeps every cell instance as a VCD scope so read_vcd can
+# annotate each instance pin; without it Verilator inlines the behavioral
+# cell models and most pins never appear in the VCD.
+verilator --binary --timing --trace -fno-inline -Wno-fatal -j "$(nproc)" \
+  --top-module tb -GCLK_PS="$CLK_PS" --Mdir "$WORK/obj_dir" -o tb_sim \
   "$TB" "$RESULTS/6_final.v" "$MODELS" >"$WORK/verilator.log" 2>&1 \
   || { cat "$WORK/verilator.log"; exit 1; }
 
