@@ -26,21 +26,17 @@ else
   CRYO_LIB = $(CRYO_LIB_DIR)/0.7V_$(CRYO_TEMP).lib
 endif
 
-# The cryo .lib has max_capacitance but no max_transition; CTS (CTS-0107) needs
-# it from the liberty, so use a generated copy with ASAP7's default (320ps).
-# It also never declares default_operating_conditions (and has no voltage_map/
-# pg_pin), so OpenSTA resolves the rail voltage to 0.0 and silently reports
-# zero switching power; point it at the lib's own operating_conditions(typical).
-# The TIEHI/TIELO supplement cells are spliced into the same file: a single
-# liberty keeps external ABC mappers working (yosys merges multiple -liberty
-# files with `read_lib -m`, which older ABC forks do not support).
+# The source liberty needs several fixes before the flow can use it —
+# default_max_transition, default_operating_conditions, clock-gate attributes
+# on the ICG cells, and the TIEHI/TIELO supplement spliced in. gen_lib.py
+# documents each one; use the generated copy everywhere.
 CRYO_LIB_SRC := $(CRYO_LIB)
 CRYO_LIB     := $(PLATFORM_DIR)/gen/$(notdir $(basename $(CRYO_LIB_SRC)))_maxtran.lib
 $(shell mkdir -p $(PLATFORM_DIR)/gen; \
-  if [ ! -f $(CRYO_LIB) ] || [ $(CRYO_LIB_SRC) -nt $(CRYO_LIB) ] || [ $(PLATFORM_DIR)/cryo7_tie_R.lib -nt $(CRYO_LIB) ]; then \
-    { sed -e 's/^\(\s*\)default_leakage_power_density : 0 ;/&\n\1default_max_transition : 0.320 ;\n\1default_operating_conditions : typical ;/' $(CRYO_LIB_SRC) | sed '$$d'; \
-      sed -n '/^  cell /,$$p' $(PLATFORM_DIR)/cryo7_tie_R.lib | sed '$$d'; \
-      echo '}'; } > $(CRYO_LIB); fi)
+  if [ ! -f $(CRYO_LIB) ] || [ $(CRYO_LIB_SRC) -nt $(CRYO_LIB) ] \
+     || [ $(PLATFORM_DIR)/cryo7_tie_R.lib -nt $(CRYO_LIB) ] \
+     || [ $(PLATFORM_DIR)/gen_lib.py -nt $(CRYO_LIB) ]; then \
+    python3 $(PLATFORM_DIR)/gen_lib.py $(CRYO_LIB_SRC) $(PLATFORM_DIR)/cryo7_tie_R.lib $(CRYO_LIB); fi)
 
 # Override every liberty the base platform selected (all corners -> one cryo corner).
 export LIB_FILES      = $(CRYO_LIB) $(ADDITIONAL_LIBS) $(WRAP_LIBS) $(WRAPPED_LIBS)
