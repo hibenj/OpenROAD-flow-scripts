@@ -106,7 +106,7 @@ def scale_cell(body, ratios, vt_suffix):
     context = None            # which ratio applies to the next values(...)
     in_leakage_power = False
     for line in body.splitlines(keepends=True):
-        cm = re.match(r'(\s*cell\()(\w+?)_R(\)\s*\{.*)$', line, re.S)
+        cm = re.match(r'(\s*cell\s*\()(\w+?)_R(\)\s*\{.*)$', line, re.S)
         if cm:
             out.append(cm.group(1) + cm.group(2) + '_' + vt_suffix
                        + cm.group(3))

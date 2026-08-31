@@ -39,6 +39,6 @@ ODB_FILE=$RESULTS/6_final.odb \
 SDC_FILE=$RESULTS/6_final.sdc \
 SPEF_FILE=$RESULTS/6_final.spef \
 VCD_FILE=$WORK/activity.vcd \
-LIB_FILES="$PLATFORM/gen/0.7V_${TEMP}_maxtran.lib" \
+LIB_FILES="$PLATFORM/gen/0.7V_${TEMP}_maxtran.lib ${EXTRA_LIBS:-}" \
   "$OPENROAD" -exit -no_splash $PLATFORM/power_vcd.tcl | tee "$OUT"
 echo "power report: $OUT"
