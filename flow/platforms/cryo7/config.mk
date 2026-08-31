@@ -11,10 +11,20 @@
 export CRYO_TEMP    ?= 10K
 export CRYO_LIB_DIR ?= $(HOME)/Documents/Repositories/cda-tum/cryogenic-cmos/standard_cell_libraries
 
+# CRYO_VT=ALL enables the pseudo multi-Vt SENSITIVITY mode: LVT/SLVT liberties
+# synthesized by gen_pseudo_vt.py (cryo RVT scaled by room-temperature ASAP7
+# Vt-flavor ratios - a projection, not characterized silicon). Must be decided
+# before including asap7_base so the LVT/SLVT LEF/GDS get picked up.
+export CRYO_VT ?= RVT
+ifeq ($(CRYO_VT),ALL)
+  export ASAP7_USE_VT = RVT LVT SLVT
+else
+  export ASAP7_USE_VT = RVT
+endif
+
 include $(PLATFORM_DIR)/asap7_base.mk
 
 export PLATFORM = cryo7
-export ASAP7_USE_VT = RVT
 
 ifeq ($(CRYO_TEMP),iso10K)
   CRYO_LIB = $(CRYO_LIB_DIR)/iso-Ioff-libs/iso_off_10K_0.7V.lib
@@ -38,12 +48,23 @@ $(shell mkdir -p $(PLATFORM_DIR)/gen; \
      || [ $(PLATFORM_DIR)/gen_lib.py -nt $(CRYO_LIB) ]; then \
     python3 $(PLATFORM_DIR)/gen_lib.py $(CRYO_LIB_SRC) $(PLATFORM_DIR)/cryo7_tie_R.lib $(CRYO_LIB); fi)
 
+ifeq ($(CRYO_VT),ALL)
+  CRYO_PSEUDO_LIBS = $(PLATFORM_DIR)/gen/pseudo_$(notdir $(basename $(CRYO_LIB_SRC)))_maxtran_L.lib \
+                     $(PLATFORM_DIR)/gen/pseudo_$(notdir $(basename $(CRYO_LIB_SRC)))_maxtran_SL.lib
+  $(shell for vt in L SL; do \
+      out=$(PLATFORM_DIR)/gen/pseudo_$(notdir $(basename $(CRYO_LIB_SRC)))_maxtran_$$vt.lib; \
+      if [ ! -f $$out ] || [ $(CRYO_LIB) -nt $$out ] || [ $(PLATFORM_DIR)/gen_pseudo_vt.py -nt $$out ]; then \
+        python3 $(PLATFORM_DIR)/gen_pseudo_vt.py $(CRYO_LIB) $(PLATFORM_DIR)/../asap7/lib/NLDM $$vt $$out; fi; done)
+else
+  CRYO_PSEUDO_LIBS =
+endif
+
 # Override every liberty the base platform selected (all corners -> one cryo corner).
-export LIB_FILES      = $(CRYO_LIB) $(ADDITIONAL_LIBS) $(WRAP_LIBS) $(WRAPPED_LIBS)
+export LIB_FILES      = $(CRYO_LIB) $(CRYO_PSEUDO_LIBS) $(ADDITIONAL_LIBS) $(WRAP_LIBS) $(WRAPPED_LIBS)
 export DFF_LIB_FILE   = $(CRYO_LIB)
-export BC_NLDM_LIB_FILES = $(CRYO_LIB)
-export WC_NLDM_LIB_FILES = $(CRYO_LIB)
-export TC_NLDM_LIB_FILES = $(CRYO_LIB)
+export BC_NLDM_LIB_FILES = $(CRYO_LIB) $(CRYO_PSEUDO_LIBS)
+export WC_NLDM_LIB_FILES = $(CRYO_LIB) $(CRYO_PSEUDO_LIBS)
+export TC_NLDM_LIB_FILES = $(CRYO_LIB) $(CRYO_PSEUDO_LIBS)
 export BC_NLDM_DFF_LIB_FILE = $(CRYO_LIB)
 export WC_NLDM_DFF_LIB_FILE = $(CRYO_LIB)
 export TC_NLDM_DFF_LIB_FILE = $(CRYO_LIB)
