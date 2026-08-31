@@ -1,0 +1,1 @@
+../asap7/config.mk

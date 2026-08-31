@@ -64,6 +64,8 @@ flow/platforms/*
 !flow/platforms/sky130ram
 !flow/platforms/gf180
 !flow/platforms/gt2n
+!flow/platforms/cryo7
+flow/platforms/cryo7/gen/
 flow/private
 
 # network

@@ -1,0 +1,35 @@
+/* Supplement for the cda-tum cryogenic ASAP7-RVT library: TIEHI/TIELO cells
+   (present in ASAP7 LEF/GDS but not characterised in the cryo .lib).
+   Functional/area data copied from asap7sc7p5t_SIMPLE_RVT; leakage set to 0
+   because no cryo characterisation exists (tie cells are rare; caveat noted
+   in the paper). Units match the cryo library header. */
+library(cryo7_tie_R) {
+  delay_model : table_lookup ;
+  time_unit : 1ns ;
+  voltage_unit : 1V ;
+  current_unit : 1mA ;
+  capacitive_load_unit(1, pf);
+  pulling_resistance_unit : 1ohm ;
+  leakage_power_unit : 1uW ;
+  nom_process : 1 ;
+  nom_voltage : 0.7 ;
+  default_cell_leakage_power : 0 ;
+  default_fanout_load : 0 ;
+  default_inout_pin_cap : 0 ;
+  default_input_pin_cap : 0 ;
+  default_output_pin_cap : 0 ;
+  cell (TIEHIx1_ASAP7_75t_R) {
+    area : 0.04374;
+    cell_leakage_power : 0;
+    pg_pin (VDD) { pg_type : primary_power;  voltage_name : "VDD"; }
+    pg_pin (VSS) { pg_type : primary_ground; voltage_name : "VSS"; }
+    pin (H) { direction : output; function : "1"; related_ground_pin : VSS; related_power_pin : VDD; }
+  }
+  cell (TIELOx1_ASAP7_75t_R) {
+    area : 0.04374;
+    cell_leakage_power : 0;
+    pg_pin (VDD) { pg_type : primary_power;  voltage_name : "VDD"; }
+    pg_pin (VSS) { pg_type : primary_ground; voltage_name : "VSS"; }
+    pin (L) { direction : output; function : "0"; related_ground_pin : VSS; related_power_pin : VDD; }
+  }
+}
