@@ -28,11 +28,14 @@ endif
 
 # The cryo .lib has max_capacitance but no max_transition; CTS (CTS-0107) needs
 # it from the liberty, so use a generated copy with ASAP7's default (320ps).
+# It also never declares default_operating_conditions (and has no voltage_map/
+# pg_pin), so OpenSTA resolves the rail voltage to 0.0 and silently reports
+# zero switching power; point it at the lib's own operating_conditions(typical).
 CRYO_LIB_SRC := $(CRYO_LIB)
 CRYO_LIB     := $(PLATFORM_DIR)/gen/$(notdir $(basename $(CRYO_LIB_SRC)))_maxtran.lib
 $(shell mkdir -p $(PLATFORM_DIR)/gen; \
   if [ ! -f $(CRYO_LIB) ] || [ $(CRYO_LIB_SRC) -nt $(CRYO_LIB) ]; then \
-    sed 's/^\(\s*\)default_leakage_power_density : 0 ;/&\n\1default_max_transition : 0.320 ;/' $(CRYO_LIB_SRC) > $(CRYO_LIB); fi)
+    sed -e 's/^\(\s*\)default_leakage_power_density : 0 ;/&\n\1default_max_transition : 0.320 ;\n\1default_operating_conditions : typical ;/' $(CRYO_LIB_SRC) > $(CRYO_LIB); fi)
 
 # Override every liberty the base platform selected (all corners -> one cryo corner).
 export LIB_FILES      = $(CRYO_LIB) $(PLATFORM_DIR)/cryo7_tie_R.lib $(ADDITIONAL_LIBS) $(WRAP_LIBS) $(WRAPPED_LIBS)
