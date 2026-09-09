@@ -5,7 +5,7 @@ ASAP7 physical stack timed with cryogenic standard-cell characterizations.
 The LEF/GDS/RC/PDN/DRC data are ASAP7's own (symlinked from `../asap7`); only
 the liberty views are exchanged. A 10 K and a 300 K run therefore differ in
 nothing but the cell characterization. This branch is the flow side of the
-paper *One Objective Is Enough: Configuring an Open-Source RTL-to-GDS Flow for
+paper *Right Knobs, Wrong Defaults: Configuring an Open-Source RTL-to-GDS Flow for
 Cryogenic CMOS* (DATE 2027 submission).
 
 ## Prerequisite: a cryogenic library
