@@ -1,7 +1,7 @@
 # OpenROAD Flow
 
 > **This branch (`cryo7-platform`) adds cryogenic CMOS support to ORFS.**
-> It is the flow side of the paper *One Objective Is Enough: Configuring an
+> It is the flow side of the paper *Right Knobs, Wrong Defaults: Configuring an
 > Open-Source RTL-to-GDS Flow for Cryogenic CMOS*. See
 > [`flow/platforms/cryo7/README.md`](flow/platforms/cryo7/README.md) for the
 > platform, the designs and testbenches, the calibrated power procedure, and
