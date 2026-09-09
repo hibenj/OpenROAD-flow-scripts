@@ -1,5 +1,16 @@
 # OpenROAD Flow
 
+> **This branch (`cryo7-platform`) adds cryogenic CMOS support to ORFS.**
+> It is the flow side of the paper *One Objective Is Enough: Configuring an
+> Open-Source RTL-to-GDS Flow for Cryogenic CMOS*. See
+> [`flow/platforms/cryo7/README.md`](flow/platforms/cryo7/README.md) for the
+> platform, the designs and testbenches, the calibrated power procedure, and
+> the archived measurements behind every number in the paper. The cryogenic
+> cell library itself is not open source and is not included; the platform
+> reads your own library from `CRYO_LIB_DIR`. Everything below is the
+> unchanged upstream ORFS documentation.
+
+
 [![Build Status](https://jenkins.openroad.tools/buildStatus/icon?job=OpenROAD-flow-scripts-Public%2Fpublic_tests_all%2Fmaster)](https://jenkins.openroad.tools/view/Public/job/OpenROAD-flow-scripts-Public/job/public_tests_all/job/master/)
 [![Docs](https://readthedocs.org/projects/openroad-flow-scripts/badge/?version=latest)](https://openroad-flow-scripts.readthedocs.io/en/latest/?badge=latest)
 
