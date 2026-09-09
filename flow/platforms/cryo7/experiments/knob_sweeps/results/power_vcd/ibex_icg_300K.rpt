@@ -1,0 +1,26 @@
+[WARNING STA-1171] platforms/cryo7/gen/0.7V_300K_maxtran.lib line 24, default_fanout_load is 0.0.
+===== report_power: default activity =====
+Group                  Internal  Switching    Leakage      Total
+                          Power      Power      Power      Power (Watts)
+----------------------------------------------------------------
+Sequential             2.63e-03   6.10e-05   2.17e-04   2.91e-03  33.5%
+Combinational          7.52e-04   6.95e-04   7.56e-04   2.20e-03  25.4%
+Clock                  2.15e-03   1.33e-03   9.09e-05   3.57e-03  41.1%
+Macro                  0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
+Pad                    0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
+----------------------------------------------------------------
+Total                  5.53e-03   2.09e-03   1.06e-03   8.68e-03 100.0%
+                          63.7%      24.0%      12.3%
+Annotated 53227 pin activities.
+===== report_power: VCD activity (/tmp/tmp.zdk2IzQOVr/activity.vcd) =====
+Group                  Internal  Switching    Leakage      Total
+                          Power      Power      Power      Power (Watts)
+----------------------------------------------------------------
+Sequential             2.39e-03   2.53e-06   2.26e-04   2.62e-03  39.7%
+Combinational          5.84e-05   1.31e-04   7.15e-04   9.05e-04  13.7%
+Clock                  1.79e-03   1.20e-03   8.77e-05   3.09e-03  46.7%
+Macro                  0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
+Pad                    0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
+----------------------------------------------------------------
+Total                  4.25e-03   1.34e-03   1.03e-03   6.61e-03 100.0%
+                          64.2%      20.2%      15.6%
